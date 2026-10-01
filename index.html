@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mattias Milger - Projects</title>
+<meta name="description" content="Web apps, a game and tools by Mattias Milger.">
+<style>
+/* =====================================================================
+   THEME
+   Same colour tokens as the other web apps. Light values live on :root,
+   dark values on body.dark-mode (dark is the default, set on <body>).
+   ===================================================================== */
+:root {
+    --bg-color: #f0f0f0;
+    --fg-color: #333333;
+    --entry-bg: #ffffff;
+    --button-bg: #cccccc;
+    --accent-color: #3498db;
+    --success-color: #27ae60;
+    --select-bg: #a0a0a0;
+    --container-bg: #ffffff;
+    --border-color: #ccc;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --badge-bg: #e8e8e8;
+    --badge-fg: #555555;
+}
+body.dark-mode {
+    --bg-color: #1e1e1e;
+    --fg-color: #ffffff;
+    --entry-bg: #3c3c3c;
+    --button-bg: #505050;
+    --accent-color: #2ecc71;
+    --success-color: #2ecc71;
+    --select-bg: #5a5a5a;
+    --container-bg: #2d2d30;
+    --border-color: #444;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --badge-bg: #3e3e42;
+    --badge-fg: #b0bec5;
+}
+
+/* =====================================================================
+   BASE
+   ===================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--fg-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+.hidden { display: none !important; }
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    background-color: var(--container-bg);
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+h1 {
+    color: var(--accent-color);
+    text-align: center;
+    margin: 0;
+    padding-bottom: 5px;
+}
+.subtitle {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: normal;
+    margin: 0 0 20px 0;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+/* =====================================================================
+   BUTTONS
+   .control-button = header buttons, .btn = card buttons,
+   .accent-button  = the highlighted (primary) variant of either.
+   ===================================================================== */
+.control-button, .btn {
+    display: inline-block;
+    padding: 8px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9em;
+    font-family: inherit;
+    text-decoration: none;
+    text-align: center;
+    background-color: var(--button-bg);
+    color: var(--fg-color);
+    transition: background-color 0.2s;
+}
+.control-button:hover, .btn:hover { background-color: var(--select-bg); }
+.accent-button {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+}
+.accent-button:hover { background-color: color-mix(in srgb, var(--accent-color) 80%, black); }
+.control-button:focus-visible, .btn:focus-visible, .chip:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.header-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* =====================================================================
+   FILTERS (the pill buttons under the header)
+   ===================================================================== */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    justify-content: center;
+}
+.filter-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.filter-group > span { font-size: 0.9em; font-weight: bold; margin-right: 2px; }
+.chip {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.82em;
+    font-family: inherit;
+    background-color: var(--button-bg);
+    color: var(--fg-color);
+    transition: background-color 0.2s;
+}
+.chip:hover { background-color: var(--select-bg); }
+.chip[aria-pressed="true"] {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+}
+
+/* =====================================================================
+   CATEGORIES AND CARDS
+   ===================================================================== */
+.category h2 {
+    color: var(--accent-color);
+    margin: 24px 0 12px 0;
+    font-size: 1.2em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+}
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+.card {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 14px;
+    background-color: var(--entry-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--border-color);   /* grey = source only */
+}
+.card[data-status="live"] { border-left-color: var(--accent-color); }   /* accent = hosted */
+.card h3 { margin: 0 0 6px 0; font-size: 1.05em; }
+.badges { display: flex; gap: 6px; margin-bottom: 8px; }
+.badge {
+    font-size: 0.75em;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background-color: var(--badge-bg);
+    color: var(--badge-fg);
+}
+.badge.live { background-color: var(--success-color); color: #ffffff; font-weight: bold; }
+.card p { margin: 0 0 12px 0; font-size: 0.9em; line-height: 1.5; flex: 1; }
+.actions { display: flex; gap: 8px; }
+.actions .btn { flex: 1 1 auto; }
+
+.empty { text-align: center; font-style: italic; opacity: 0.7; padding: 40px 0; }
+
+@media (max-width: 768px) {
+    .container { padding: 15px; margin: 15px 10px; }
+    .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="dark-mode">
+<div class="container">
+    <h1>Mattias Milger</h1>
+    <h2 class="subtitle">Web apps, a game and tools</h2>
+
+    <div class="header-controls">
+        <a class="control-button accent-button" href="https://github.com/MattiasMilger" target="_blank" rel="noopener noreferrer">GitHub Profile</a>
+        <button id="btn-toggle-theme" class="control-button" type="button">Toggle Theme</button>
+    </div>
+
+    <!-- Filter buttons. Availability is fixed; the language buttons are
+         generated from the PROJECTS list in the script below. -->
+    <div class="filters">
+        <div class="filter-group" id="filter-status" role="group" aria-label="Filter by availability">
+            <span>Availability:</span>
+            <button class="chip" type="button" data-value="all" aria-pressed="true">All</button>
+            <button class="chip" type="button" data-value="live" aria-pressed="false">Live</button>
+            <button class="chip" type="button" data-value="source" aria-pressed="false">Source only</button>
+        </div>
+        <div class="filter-group" id="filter-lang" role="group" aria-label="Filter by language">
+            <span>Language:</span>
+        </div>
+    </div>
+
+    <!-- Categories and cards are generated here by the script below. -->
+    <div id="projects"></div>
+
+    <p id="empty" class="empty hidden">No projects match these filters.</p>
+    <noscript><p class="empty">This page needs JavaScript to list the projects.</p></noscript>
+</div>
+
+<script>
+(() => {
+    /* =================================================================
+       PROJECTS  -  THE ONLY PART YOU NORMALLY NEED TO EDIT
+
+       To add a project, copy one entry below and change it:
+
+         category    Section heading. Projects with the same text are grouped
+                     together. Sections appear in the order they first show
+                     up in this list, so put a new category where you want it.
+         name        Card title.
+         language    Shown as a badge and used by the language filter. A new
+                     language gets its own filter button automatically.
+         description One or two short sentences.
+         app         Link to the hosted github.io page. Set to null if the
+                     project is not hosted. This also decides the status:
+                     link = "Live" card, null = "Source only" card.
+         repo        Link to the GitHub repository.
+       ================================================================= */
+    const PROJECTS = [
+        // --- IT admin & security ---
+        {
+            category: 'IT admin & security',
+            name: 'Password Generator',
+            language: 'JavaScript',
+            description: 'Strong passwords with set counts of digits, capitals and punctuation, plus a pronounceable mode.',
+            app: 'https://mattiasmilger.github.io/Web-Password-Generator-by-Mattias/',
+            repo: 'https://github.com/MattiasMilger/Web-Password-Generator-by-Mattias'
+        },
+        {
+            category: 'IT admin & security',
+            name: 'Image Editor',
+            language: 'HTML',   // plain HTML for now; change to 'JavaScript' if that is added
+            description: 'Annotate screenshots with arrows, boxes and text, and censor sensitive areas. Made for guides.',
+            app: 'https://mattiasmilger.github.io/Web-Image-Editor-by-Mattias/',
+            repo: 'https://github.com/MattiasMilger/Web-Image-Editor-by-Mattias'
+        },
+        {
+            category: 'IT admin & security',
+            name: 'Local Upload Server',
+            language: 'Python',
+            description: 'Send files from your phone to your PC over Wi-Fi. Passcode protected, local network only.',
+            app: null,
+            repo: 'https://github.com/MattiasMilger/Local-Upload-Server'
+        },
+
+        // --- Games ---
+        {
+            category: 'Games',
+            name: 'Väsenväktaren',
+            language: 'JavaScript',
+            description: 'A turn-based creature collection game built on Swedish folklore.',
+            app: 'https://mattiasmilger.github.io/Vasenvaktaren/',
+            repo: 'https://github.com/MattiasMilger/Vasenvaktaren'
+        },
+
+        // --- Learning & reading ---
+        {
+            category: 'Learning & reading',
+            name: 'Flashcards',
+            language: 'JavaScript',
+            description: 'Study with spaced repetition or a simple mode. Imports .txt and Anki exports.',
+            app: 'https://mattiasmilger.github.io/Web-Flashcards-by-Mattias/',
+            repo: 'https://github.com/MattiasMilger/Web-Flashcards-by-Mattias'
+        },
+        {
+            category: 'Learning & reading',
+            name: 'News Feed',
+            language: 'JavaScript',
+            description: 'An RSS reader that combines several sources per category, with search.',
+            app: 'https://mattiasmilger.github.io/Web-News-Feed-by-Mattias/',
+            repo: 'https://github.com/MattiasMilger/Web-News-Feed-by-Mattias'
+        },
+
+        // --- Finance & AI ---
+        {
+            category: 'Finance & AI',
+            name: 'AI Portfolio Optimizer',
+            language: 'Python',
+            description: 'Reads your portfolio, fetches live prices and gets sell, buy and hold advice from Gemini.',
+            app: null,
+            repo: 'https://github.com/MattiasMilger/AI-Portfolio-Optimizer'
+        }
+    ];
+
+    /* =================================================================
+       Everything below turns the list above into the page.
+       ================================================================= */
+
+    const THEME_KEY = 'portfolio_theme';        // localStorage key for the saved theme
+    const filters = { status: 'all', lang: 'all' };   // currently selected filters
+
+    // Small helper: create an element with an optional class and text.
+    function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text) node.textContent = text;
+        return node;
+    }
+
+    // Create a link styled as a button that opens in a new tab.
+    function linkButton(label, href, accent) {
+        const a = el('a', 'btn' + (accent ? ' accent-button' : ''), label);
+        a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        return a;
+    }
+
+    // ---------------- Cards ----------------
+
+    // Build one project card. Hosted projects get "Open app" + "GitHub",
+    // source-only projects get a single "View on GitHub" button.
+    function buildCard(p) {
+        const live = Boolean(p.app);
+
+        const card = el('article', 'card');
+        card.dataset.status = live ? 'live' : 'source';   // read by CSS and the status filter
+        card.dataset.lang = p.language;                    // read by the language filter
+
+        card.appendChild(el('h3', '', p.name));
+
+        const badges = el('div', 'badges');
+        badges.appendChild(el('span', 'badge' + (live ? ' live' : ''), live ? 'Live' : 'Source only'));
+        badges.appendChild(el('span', 'badge', p.language));
+        card.appendChild(badges);
+
+        card.appendChild(el('p', '', p.description));
+
+        const actions = el('div', 'actions');
+        if (live) {
+            actions.appendChild(linkButton('Open app', p.app, true));
+            actions.appendChild(linkButton('GitHub', p.repo, false));
+        } else {
+            actions.appendChild(linkButton('View on GitHub', p.repo, false));
+        }
+        card.appendChild(actions);
+
+        return card;
+    }
+
+    // Group projects by category (in order of first appearance) and render them.
+    function renderProjects() {
+        const root = document.getElementById('projects');
+        const sections = new Map();   // category name -> its .cards container
+
+        PROJECTS.forEach(p => {
+            if (!sections.has(p.category)) {
+                const section = el('section', 'category');
+                section.appendChild(el('h2', '', p.category));
+                const grid = el('div', 'cards');
+                section.appendChild(grid);
+                root.appendChild(section);
+                sections.set(p.category, grid);
+            }
+            sections.get(p.category).appendChild(buildCard(p));
+        });
+    }
+
+    // ---------------- Filters ----------------
+
+    // Create one filter pill button.
+    function buildChip(label, value, pressed) {
+        const chip = el('button', 'chip', label);
+        chip.type = 'button';
+        chip.dataset.value = value;
+        chip.setAttribute('aria-pressed', String(pressed));
+        return chip;
+    }
+
+    // Add an "All" button plus one button per language found in PROJECTS.
+    function renderLanguageChips() {
+        const group = document.getElementById('filter-lang');
+        group.appendChild(buildChip('All', 'all', true));
+        [...new Set(PROJECTS.map(p => p.language))].forEach(lang => {
+            group.appendChild(buildChip(lang, lang, false));
+        });
+    }
+
+    // Show or hide cards and whole categories to match the active filters.
+    function applyFilters() {
+        const empty = document.getElementById('empty');
+        let anyVisible = false;
+
+        document.querySelectorAll('.card').forEach(card => {
+            const okStatus = filters.status === 'all' || card.dataset.status === filters.status;
+            const okLang = filters.lang === 'all' || card.dataset.lang === filters.lang;
+            card.classList.toggle('hidden', !(okStatus && okLang));
+        });
+
+        document.querySelectorAll('.category').forEach(section => {
+            const visible = section.querySelector('.card:not(.hidden)') !== null;
+            section.classList.toggle('hidden', !visible);   // hide empty categories
+            if (visible) anyVisible = true;
+        });
+
+        empty.classList.toggle('hidden', anyVisible);
+    }
+
+    // Make a group of pill buttons act like a radio set for one filter.
+    function bindFilterGroup(groupId, key) {
+        const group = document.getElementById(groupId);
+        group.addEventListener('click', e => {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+            filters[key] = chip.dataset.value;
+            group.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === chip));
+            applyFilters();
+        });
+    }
+
+    // ---------------- Theme ----------------
+
+    // Dark is the default; a saved "light" choice overrides it.
+    function initTheme() {
+        try {
+            if (localStorage.getItem(THEME_KEY) === 'light') document.body.classList.remove('dark-mode');
+        } catch (e) { /* storage unavailable (e.g. private mode): keep the default */ }
+
+        document.getElementById('btn-toggle-theme').addEventListener('click', () => {
+            const dark = document.body.classList.toggle('dark-mode');
+            try { localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); } catch (e) { /* ignore */ }
+        });
+    }
+
+    // ---------------- Start ----------------
+    initTheme();
+    renderProjects();
+    renderLanguageChips();
+    bindFilterGroup('filter-status', 'status');
+    bindFilterGroup('filter-lang', 'lang');
+})();
+</script>
+</body>
+</html>
