@@ -4,7 +4,7 @@
 
 [![Visit the site](https://img.shields.io/badge/Visit_the_site-mattiasmilger.github.io-2ecc71?style=for-the-badge)](https://mattiasmilger.github.io/)
 
-Web apps, a game and desktop tools.
+My projects, all in one place.
 
 </div>
 
@@ -17,7 +17,7 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 <details>
 <summary><b>Features</b></summary>
 
-- **Categorized Projects** - Projects are grouped by purpose (IT admin & security, Games, Learning & reading, Finance & AI).
+- **Categorized Projects** - Projects are grouped by what they are for.
 - **Live or Source Only** - Hosted projects link straight to their `github.io` page, while projects that are not hosted link to their GitHub repository.
 - **Availability Filter** - Show all projects, only live ones, or only source-only ones.
 - **Language Filter** - Filter by programming language. Buttons are generated automatically from the project list.
