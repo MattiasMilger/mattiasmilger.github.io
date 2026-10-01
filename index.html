@@ -197,6 +197,21 @@ h1 {
 
 .empty { text-align: center; font-style: italic; opacity: 0.7; padding: 40px 0; }
 
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+footer a:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 768px) {
     .container { padding: 15px; margin: 15px 10px; }
     .cards { grid-template-columns: 1fr; }
@@ -232,6 +247,10 @@ h1 {
 
     <p id="empty" class="empty hidden">No projects match these filters.</p>
     <noscript><p class="empty">This page needs JavaScript to list the projects.</p></noscript>
+
+    <footer>
+        <p><a href="https://github.com/MattiasMilger" target="_blank" rel="noopener noreferrer">My GitHub</a></p>
+    </footer>
 </div>
 
 <script>
