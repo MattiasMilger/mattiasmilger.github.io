@@ -22,12 +22,13 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 - **News Feed**: [Live App](https://mattiasmilger.github.io/Web-News-Feed-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-News-Feed-by-Mattias)
 - **Väsenväktaren**: [Live App](https://mattiasmilger.github.io/Vasenvaktaren/) | [GitHub](https://github.com/MattiasMilger/Vasenvaktaren)
 - **AI Portfolio Optimizer**: [GitHub](https://github.com/MattiasMilger/AI-Portfolio-Optimizer)
+- **Reine M (Spotify)**: [Spotify Artist Page](http://open.spotify.com/artist/4ZPJozo56gnUzwzCw2lrrM)
 
 <details>
 <summary><b>Features</b></summary>
 
-- **Categorized Projects** - Projects are grouped by what they are for (IT, Learning, Games, AI).
-- **Live or Downloadable** - Hosted projects link straight to their `github.io` page, while projects that are not hosted link to GitHub. Live cards have an accent-coloured edge, downloadable cards a grey one.
+- **Categorized Projects** - Projects are grouped by what they are for (IT, Learning, Games, AI, Creative).
+- **Live or Downloadable** - Hosted projects link straight to their page, while projects that are not hosted link to GitHub. Live cards have an accent-coloured edge, downloadable cards a grey one.
 - **Availability Filter** - Show all projects, only live ones, or only downloadable ones.
 - **Drag to Reorder** - Drag any section (anywhere except its buttons) to move it. On touch screens, press and hold briefly, then drag. The order is remembered, and a small Reset order button at the bottom restores the default.
 - **Info Window** - An Info button opens a Help & Info window explaining the page, in the same style as my other apps.
@@ -63,8 +64,8 @@ mattiasmilger.github.io/
 | `category` | Section heading. Projects with the same text are grouped together, in the order they first appear. This is the default order; visitors can drag sections to their own order |
 | `name` | Card title |
 | `description` | One or two short sentences |
-| `app` | Link to the hosted `github.io` page, or `null` if the project is not hosted. This also sets the status: a link makes it a **Live** card, `null` makes it a **Downloadable** card |
-| `repo` | Link to GitHub |
+| `app` | Link to the hosted app or external page, or `null` if the project is not hosted. This also sets the status: a link makes it a **Live** card, `null` makes it a **Downloadable** card |
+| `repo` | Link to GitHub, or `null` if it doesn't apply (e.g. external links like Spotify) |
 
 If you add a new category, it appears after the sections a visitor has already arranged until they move it.
 

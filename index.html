@@ -77,10 +77,18 @@ body {
 }
 
 h1 {
-    color: var(--accent-color);
     text-align: center;
     margin: 0;
     padding-bottom: 5px;
+}
+h1 a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+h1 a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
 }
 .subtitle {
     text-align: center;
@@ -334,11 +342,10 @@ footer a:hover {
 </head>
 <body class="dark-mode">
 <div class="container">
-    <h1>Mattias Milger</h1>
+    <h1><a href="https://github.com/MattiasMilger" target="_blank" rel="noopener noreferrer">Mattias Milger</a></h1>
     <h2 class="subtitle">My projects</h2>
 
     <div class="header-controls">
-        <a class="control-button accent-button" href="https://github.com/MattiasMilger" target="_blank" rel="noopener noreferrer">GitHub Profile</a>
         <button id="btn-toggle-theme" class="control-button" type="button">Toggle Theme</button>
         <button id="btn-info" class="control-button" type="button">Info</button>
     </div>
@@ -381,7 +388,7 @@ footer a:hover {
         <div class="info-box">
             <h4>Browsing</h4>
             <ul>
-                <li><strong>Live</strong> - hosted on GitHub Pages. Click Open app to use it in your browser. Marked with a coloured edge.</li>
+                <li><strong>Live</strong> - hosted on GitHub Pages or external services. Click Open app to use it. Marked with a coloured edge.</li>
                 <li><strong>Downloadable</strong> - not hosted. Click GitHub to download it. Marked with a grey edge.</li>
                 <li><strong>Availability filter</strong> - show all projects, only live ones, or only downloadable ones.</li>
             </ul>
@@ -420,10 +427,10 @@ footer a:hover {
                      their own browser and does not change this list.)
          name        Card title.
          description One or two short sentences.
-         app         Link to the hosted github.io page. Set to null if the
+         app         Link to the hosted app/page. Set to null if the
                      project is not hosted. This also decides the status:
                      link = "Live" card, null = "Downloadable" card.
-         repo        Link to the GitHub repository.
+         repo        Link to the GitHub repository (or null if external).
        ================================================================= */
     const PROJECTS = [
         // --- IT ---
@@ -481,6 +488,15 @@ footer a:hover {
             description: 'Reads your portfolio, fetches live prices and gets sell, buy and hold advice from Gemini.',
             app: null,
             repo: 'https://github.com/MattiasMilger/AI-Portfolio-Optimizer'
+        },
+
+        // --- Creative ---
+        {
+            category: 'Creative',
+            name: 'Reine M (Spotify)',
+            description: 'My music artist page where I release original music.',
+            app: 'http://open.spotify.com/artist/4ZPJozo56gnUzwzCw2lrrM',
+            repo: null
         }
     ];
 
@@ -515,8 +531,8 @@ footer a:hover {
 
     // ---------------- Cards ----------------
 
-    // Build one project card. Hosted projects get "Open app" + "GitHub",
-    // downloadable projects get a single "GitHub" button.
+    // Build one project card. Hosted/external apps get an open button;
+    // repositories get a GitHub button. If repo is null, only the app button shows.
     function buildCard(p) {
         const live = Boolean(p.app);
 
@@ -532,9 +548,11 @@ footer a:hover {
         card.appendChild(el('p', '', p.description));
 
         const actions = el('div', 'actions');
-        if (live) {
+        if (p.app && p.repo) {
             actions.appendChild(linkButton('Open app', p.app, true));
             actions.appendChild(linkButton('GitHub', p.repo, false));
+        } else if (p.app) {
+            actions.appendChild(linkButton('Open link', p.app, true));
         } else {
             actions.appendChild(linkButton('GitHub', p.repo, false));
         }
