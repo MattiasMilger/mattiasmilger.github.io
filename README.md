@@ -17,9 +17,11 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 <details>
 <summary><b>Features</b></summary>
 
-- **Categorized Projects** - Projects are grouped by what they are for.
-- **Live or Downloadable** - Hosted projects link straight to their `github.io` page, while projects that are not hosted link to their GitHub repository.
+- **Categorized Projects** - Projects are grouped by what they are for (IT, Learning, Games, AI).
+- **Live or Downloadable** - Hosted projects link straight to their `github.io` page, while projects that are not hosted link to their GitHub repository. Live cards have an accent-coloured edge, downloadable cards a grey one.
 - **Availability Filter** - Show all projects, only live ones, or only downloadable ones.
+- **Drag to Reorder** - Drag any section (anywhere except its buttons) to move it. On touch screens, press and hold briefly, then drag. The order is remembered, and a small Reset order button at the bottom restores the default.
+- **Info Window** - An Info button opens a Help & Info window explaining the page, in the same style as my other apps.
 - **Easy to Update** - Every project is one entry in a single list at the top of the script.
 - **Dark / Light Theme** - Toggle between dark and light modes (dark by default). Your choice is remembered.
 - **Responsive Design** - Works on desktop and mobile devices.
@@ -31,15 +33,16 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 
 ```
 mattiasmilger.github.io/
-├── index.html      # Page layout, styling (CSS variables), project list, and filter logic
+├── index.html      # Page layout, styling (CSS variables), project list, and page logic
 └── README.md       # This file
 ```
 
 | Part of `index.html` | Purpose |
 |---|---|
-| `<style>` | Theming (CSS variables), layout, cards, filter buttons, responsive design |
+| `<style>` | Theming (CSS variables), layout, cards, filter buttons, Info window, responsive design |
+| Info window markup | The Help & Info content, shown by the Info button |
 | `PROJECTS` list | The data: one entry per project (category, name, description, app link, repo link) |
-| Script (below the list) | Builds the cards from the list, applies filters, handles the theme toggle |
+| Script (below the list) | Builds the cards from the list, applies filters, handles dragging and saved order, the Info window, and the theme toggle |
 
 </details>
 
@@ -52,11 +55,13 @@ mattiasmilger.github.io/
 
 | Field | What it does |
 |---|---|
-| `category` | Section heading. Projects with the same text are grouped together, in the order they first appear |
+| `category` | Section heading. Projects with the same text are grouped together, in the order they first appear. This is the default order; visitors can drag sections to their own order |
 | `name` | Card title |
 | `description` | One or two short sentences |
 | `app` | Link to the hosted `github.io` page, or `null` if the project is not hosted. This also sets the status: a link makes it a **Live** card, `null` makes it a **Downloadable** card |
 | `repo` | Link to the GitHub repository |
+
+If you add a new category, it appears after the sections a visitor has already arranged until they move it.
 
 </details>
 
@@ -76,7 +81,8 @@ This is a GitHub *user site*, so the repository must be named exactly `mattiasmi
 
 - **No external dependencies** - pure vanilla HTML, CSS, and JavaScript.
 - **Client-side only** - No data is transmitted to any server.
-- **localStorage** - Only the theme choice (`portfolio_theme`) is stored in the browser.
+- **localStorage** - Only two things are stored in the browser: the theme choice (`portfolio_theme`) and the section order (`portfolio_category_order`).
+- **Dragging** - Uses pointer events rather than the browser's built-in drag and drop, so it also works on touch screens.
 - **Status is derived** - A project is "Live" when it has an `app` link, so the badge, card colour, buttons, and filter can never disagree.
 - **Browser support** - Works in all modern browsers (Chrome, Firefox, Edge, Safari). Requires JavaScript enabled.
 
