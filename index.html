@@ -17,7 +17,6 @@
     --entry-bg: #ffffff;
     --button-bg: #cccccc;
     --accent-color: #3498db;
-    --success-color: #27ae60;
     --select-bg: #a0a0a0;
     --container-bg: #ffffff;
     --border-color: #ccc;
@@ -31,7 +30,6 @@ body.dark-mode {
     --entry-bg: #3c3c3c;
     --button-bg: #505050;
     --accent-color: #2ecc71;
-    --success-color: #2ecc71;
     --select-bg: #5a5a5a;
     --container-bg: #2d2d30;
     --border-color: #444;
@@ -178,7 +176,7 @@ h1 {
     padding: 12px 14px;
     background-color: var(--entry-bg);
     border-radius: 6px;
-    border-left: 4px solid var(--border-color);   /* grey = source only */
+    border-left: 4px solid var(--border-color);   /* grey = downloadable */
 }
 .card[data-status="live"] { border-left-color: var(--accent-color); }   /* accent = hosted */
 .card h3 { margin: 0 0 6px 0; font-size: 1.05em; }
@@ -190,7 +188,7 @@ h1 {
     background-color: var(--badge-bg);
     color: var(--badge-fg);
 }
-.badge.live { background-color: var(--success-color); color: #ffffff; font-weight: bold; }
+.badge.live { background-color: var(--accent-color); color: #ffffff; font-weight: bold; }
 .card p { margin: 0 0 12px 0; font-size: 0.9em; line-height: 1.5; flex: 1; }
 .actions { display: flex; gap: 8px; }
 .actions .btn { flex: 1 1 auto; }
@@ -228,17 +226,13 @@ footer a:hover {
         <button id="btn-toggle-theme" class="control-button" type="button">Toggle Theme</button>
     </div>
 
-    <!-- Filter buttons. Availability is fixed; the language buttons are
-         generated from the PROJECTS list in the script below. -->
+    <!-- Filter buttons for availability. -->
     <div class="filters">
         <div class="filter-group" id="filter-status" role="group" aria-label="Filter by availability">
             <span>Availability:</span>
             <button class="chip" type="button" data-value="all" aria-pressed="true">All</button>
             <button class="chip" type="button" data-value="live" aria-pressed="false">Live</button>
-            <button class="chip" type="button" data-value="source" aria-pressed="false">Source only</button>
-        </div>
-        <div class="filter-group" id="filter-lang" role="group" aria-label="Filter by language">
-            <span>Language:</span>
+            <button class="chip" type="button" data-value="download" aria-pressed="false">Downloadable</button>
         </div>
     </div>
 
@@ -249,7 +243,7 @@ footer a:hover {
     <noscript><p class="empty">This page needs JavaScript to list the projects.</p></noscript>
 
     <footer>
-        <p><a href="https://github.com/MattiasMilger" target="_blank" rel="noopener noreferrer">My GitHub</a></p>
+        <p><a href="https://github.com/MattiasMilger/mattiasmilger.github.io" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
     </footer>
 </div>
 
@@ -264,12 +258,10 @@ footer a:hover {
                      together. Sections appear in the order they first show
                      up in this list, so put a new category where you want it.
          name        Card title.
-         language    Shown as a badge and used by the language filter. A new
-                     language gets its own filter button automatically.
          description One or two short sentences.
          app         Link to the hosted github.io page. Set to null if the
                      project is not hosted. This also decides the status:
-                     link = "Live" card, null = "Source only" card.
+                     link = "Live" card, null = "Downloadable" card.
          repo        Link to the GitHub repository.
        ================================================================= */
     const PROJECTS = [
@@ -277,7 +269,6 @@ footer a:hover {
         {
             category: 'IT admin & security',
             name: 'Password Generator',
-            language: 'JavaScript',
             description: 'Strong passwords with set counts of digits, capitals and punctuation, plus a pronounceable mode.',
             app: 'https://mattiasmilger.github.io/Web-Password-Generator-by-Mattias/',
             repo: 'https://github.com/MattiasMilger/Web-Password-Generator-by-Mattias'
@@ -285,7 +276,6 @@ footer a:hover {
         {
             category: 'IT admin & security',
             name: 'Image Editor',
-            language: 'HTML',   // plain HTML for now; change to 'JavaScript' if that is added
             description: 'Annotate screenshots with arrows, boxes and text, and censor sensitive areas. Made for guides.',
             app: 'https://mattiasmilger.github.io/Web-Image-Editor-by-Mattias/',
             repo: 'https://github.com/MattiasMilger/Web-Image-Editor-by-Mattias'
@@ -293,7 +283,6 @@ footer a:hover {
         {
             category: 'IT admin & security',
             name: 'Local Upload Server',
-            language: 'Python',
             description: 'Send files from your phone to your PC over Wi-Fi. Passcode protected, local network only.',
             app: null,
             repo: 'https://github.com/MattiasMilger/Local-Upload-Server'
@@ -303,7 +292,6 @@ footer a:hover {
         {
             category: 'Games',
             name: 'Väsenväktaren',
-            language: 'JavaScript',
             description: 'A turn-based creature collection game built on Swedish folklore.',
             app: 'https://mattiasmilger.github.io/Vasenvaktaren/',
             repo: 'https://github.com/MattiasMilger/Vasenvaktaren'
@@ -313,7 +301,6 @@ footer a:hover {
         {
             category: 'Learning & reading',
             name: 'Flashcards',
-            language: 'JavaScript',
             description: 'Study with spaced repetition or a simple mode. Imports .txt and Anki exports.',
             app: 'https://mattiasmilger.github.io/Web-Flashcards-by-Mattias/',
             repo: 'https://github.com/MattiasMilger/Web-Flashcards-by-Mattias'
@@ -321,7 +308,6 @@ footer a:hover {
         {
             category: 'Learning & reading',
             name: 'News Feed',
-            language: 'JavaScript',
             description: 'An RSS reader that combines several sources per category, with search.',
             app: 'https://mattiasmilger.github.io/Web-News-Feed-by-Mattias/',
             repo: 'https://github.com/MattiasMilger/Web-News-Feed-by-Mattias'
@@ -331,7 +317,6 @@ footer a:hover {
         {
             category: 'Finance & AI',
             name: 'AI Portfolio Optimizer',
-            language: 'Python',
             description: 'Reads your portfolio, fetches live prices and gets sell, buy and hold advice from Gemini.',
             app: null,
             repo: 'https://github.com/MattiasMilger/AI-Portfolio-Optimizer'
@@ -343,7 +328,7 @@ footer a:hover {
        ================================================================= */
 
     const THEME_KEY = 'portfolio_theme';        // localStorage key for the saved theme
-    const filters = { status: 'all', lang: 'all' };   // currently selected filters
+    const filters = { status: 'all' };   // currently selected filters
 
     // Small helper: create an element with an optional class and text.
     function el(tag, className, text) {
@@ -365,19 +350,17 @@ footer a:hover {
     // ---------------- Cards ----------------
 
     // Build one project card. Hosted projects get "Open app" + "GitHub",
-    // source-only projects get a single "View on GitHub" button.
+    // downloadable projects get a single "View on GitHub" button.
     function buildCard(p) {
         const live = Boolean(p.app);
 
         const card = el('article', 'card');
-        card.dataset.status = live ? 'live' : 'source';   // read by CSS and the status filter
-        card.dataset.lang = p.language;                    // read by the language filter
+        card.dataset.status = live ? 'live' : 'download';   // read by CSS and the status filter
 
         card.appendChild(el('h3', '', p.name));
 
         const badges = el('div', 'badges');
-        badges.appendChild(el('span', 'badge' + (live ? ' live' : ''), live ? 'Live' : 'Source only'));
-        badges.appendChild(el('span', 'badge', p.language));
+        badges.appendChild(el('span', 'badge' + (live ? ' live' : ''), live ? 'Live' : 'Downloadable'));
         card.appendChild(badges);
 
         card.appendChild(el('p', '', p.description));
@@ -414,24 +397,6 @@ footer a:hover {
 
     // ---------------- Filters ----------------
 
-    // Create one filter pill button.
-    function buildChip(label, value, pressed) {
-        const chip = el('button', 'chip', label);
-        chip.type = 'button';
-        chip.dataset.value = value;
-        chip.setAttribute('aria-pressed', String(pressed));
-        return chip;
-    }
-
-    // Add an "All" button plus one button per language found in PROJECTS.
-    function renderLanguageChips() {
-        const group = document.getElementById('filter-lang');
-        group.appendChild(buildChip('All', 'all', true));
-        [...new Set(PROJECTS.map(p => p.language))].forEach(lang => {
-            group.appendChild(buildChip(lang, lang, false));
-        });
-    }
-
     // Show or hide cards and whole categories to match the active filters.
     function applyFilters() {
         const empty = document.getElementById('empty');
@@ -439,8 +404,7 @@ footer a:hover {
 
         document.querySelectorAll('.card').forEach(card => {
             const okStatus = filters.status === 'all' || card.dataset.status === filters.status;
-            const okLang = filters.lang === 'all' || card.dataset.lang === filters.lang;
-            card.classList.toggle('hidden', !(okStatus && okLang));
+            card.classList.toggle('hidden', !okStatus);
         });
 
         document.querySelectorAll('.category').forEach(section => {
@@ -481,9 +445,7 @@ footer a:hover {
     // ---------------- Start ----------------
     initTheme();
     renderProjects();
-    renderLanguageChips();
     bindFilterGroup('filter-status', 'status');
-    bindFilterGroup('filter-lang', 'lang');
 })();
 </script>
 </body>

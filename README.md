@@ -18,9 +18,8 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 <summary><b>Features</b></summary>
 
 - **Categorized Projects** - Projects are grouped by what they are for.
-- **Live or Source Only** - Hosted projects link straight to their `github.io` page, while projects that are not hosted link to their GitHub repository.
-- **Availability Filter** - Show all projects, only live ones, or only source-only ones.
-- **Language Filter** - Filter by programming language. Buttons are generated automatically from the project list.
+- **Live or Downloadable** - Hosted projects link straight to their `github.io` page, while projects that are not hosted link to their GitHub repository.
+- **Availability Filter** - Show all projects, only live ones, or only downloadable ones.
 - **Easy to Update** - Every project is one entry in a single list at the top of the script.
 - **Dark / Light Theme** - Toggle between dark and light modes (dark by default). Your choice is remembered.
 - **Responsive Design** - Works on desktop and mobile devices.
@@ -39,8 +38,8 @@ mattiasmilger.github.io/
 | Part of `index.html` | Purpose |
 |---|---|
 | `<style>` | Theming (CSS variables), layout, cards, filter buttons, responsive design |
-| `PROJECTS` list | The data: one entry per project (category, name, language, description, app link, repo link) |
-| Script (below the list) | Builds the cards from the list, creates the language filters, applies filters, handles the theme toggle |
+| `PROJECTS` list | The data: one entry per project (category, name, description, app link, repo link) |
+| Script (below the list) | Builds the cards from the list, applies filters, handles the theme toggle |
 
 </details>
 
@@ -55,9 +54,8 @@ mattiasmilger.github.io/
 |---|---|
 | `category` | Section heading. Projects with the same text are grouped together, in the order they first appear |
 | `name` | Card title |
-| `language` | Badge text and language filter. A new language gets its own filter button automatically |
 | `description` | One or two short sentences |
-| `app` | Link to the hosted `github.io` page, or `null` if the project is not hosted. This also sets the status: a link makes it a **Live** card, `null` makes it a **Source only** card |
+| `app` | Link to the hosted `github.io` page, or `null` if the project is not hosted. This also sets the status: a link makes it a **Live** card, `null` makes it a **Downloadable** card |
 | `repo` | Link to the GitHub repository |
 
 </details>
