@@ -47,7 +47,7 @@ mattiasmilger.github.io/
 |---|---|
 | `<style>` | Theming (CSS variables), layout, cards, filter buttons, Info window, responsive design |
 | Info window markup | The Help & Info content, shown by the Info button |
-| `PROJECTS` list | The data: one entry per project (category, name, description, app link, repo link) |
+| `PROJECTS` list | The data: one entry per project (category, emoji, name, description, app link, repo link) |
 | Script (below the list) | Builds the cards from the list, applies filters, handles dragging and saved order, the Info window, and the theme toggle |
 
 </details>
@@ -62,6 +62,7 @@ mattiasmilger.github.io/
 | Field | What it does |
 |---|---|
 | `category` | Section heading. Projects with the same text are grouped together, in the order they first appear. This is the default order; visitors can drag sections to their own order |
+| `emoji` | Optional single emoji shown before the card title, for easier scanning |
 | `name` | Card title |
 | `description` | One or two short sentences |
 | `app` | Link to the hosted app or external page, or `null` if the project is not hosted. This also sets the status: a link makes it a **Live** card, `null` makes it a **Downloadable** card |

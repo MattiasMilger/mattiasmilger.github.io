@@ -212,6 +212,7 @@ body.is-dragging, body.is-dragging * {
 }
 .card[data-status="live"] { border-left-color: var(--accent-color); }   /* accent = hosted */
 .card h3 { margin: 0 0 6px 0; font-size: 1.05em; }
+.card h3 .emoji { margin-right: 8px; }
 .badges { display: flex; gap: 6px; margin-bottom: 8px; }
 .badge {
     font-size: 0.75em;
@@ -425,6 +426,8 @@ footer a:hover {
                      up in this list, so put a new category where you want it.
                      (Visitors can drag sections around; that is saved in
                      their own browser and does not change this list.)
+         emoji       Optional single emoji shown before the card title
+                     (makes the list easier to scan).
          name        Card title.
          description One or two short sentences.
          app         Link to the hosted app/page. Set to null if the
@@ -436,6 +439,7 @@ footer a:hover {
         // --- IT ---
         {
             category: 'IT',
+            emoji: '🔑',
             name: 'Password Generator',
             description: 'Strong passwords with set counts of digits, capitals and punctuation, plus a pronounceable mode.',
             app: 'https://mattiasmilger.github.io/Web-Password-Generator-by-Mattias/',
@@ -443,6 +447,7 @@ footer a:hover {
         },
         {
             category: 'IT',
+            emoji: '🖼️',
             name: 'Image Editor',
             description: 'Annotate screenshots with arrows, boxes and text, and censor sensitive areas. Made for guides.',
             app: 'https://mattiasmilger.github.io/Web-Image-Editor-by-Mattias/',
@@ -450,6 +455,7 @@ footer a:hover {
         },
         {
             category: 'IT',
+            emoji: '📲',
             name: 'Local Upload Server',
             description: 'Send files from your phone to your PC over Wi-Fi. Passcode protected, local network only.',
             app: null,
@@ -459,6 +465,7 @@ footer a:hover {
         // --- Learning ---
         {
             category: 'Learning',
+            emoji: '🧠',
             name: 'Flashcards',
             description: 'Study with spaced repetition or a simple mode. Imports .txt and Anki exports.',
             app: 'https://mattiasmilger.github.io/Web-Flashcards-by-Mattias/',
@@ -466,6 +473,7 @@ footer a:hover {
         },
         {
             category: 'Learning',
+            emoji: '📰',
             name: 'News Feed',
             description: 'An RSS reader that combines several sources per category, with search.',
             app: 'https://mattiasmilger.github.io/Web-News-Feed-by-Mattias/',
@@ -475,6 +483,7 @@ footer a:hover {
         // --- Games ---
         {
             category: 'Games',
+            emoji: '🧌',
             name: 'Väsenväktaren',
             description: 'A turn-based creature collection game built on Swedish folklore.',
             app: 'https://mattiasmilger.github.io/Vasenvaktaren/',
@@ -484,6 +493,7 @@ footer a:hover {
         // --- AI ---
         {
             category: 'AI',
+            emoji: '📈',
             name: 'AI Portfolio Optimizer',
             description: 'Reads your portfolio, fetches live prices and gets sell, buy and hold advice from Gemini.',
             app: null,
@@ -493,6 +503,7 @@ footer a:hover {
         // --- Creative ---
         {
             category: 'Creative',
+            emoji: '🎵',
             name: 'Reine M (Spotify)',
             description: 'My music artist page where I release original music.',
             app: 'http://open.spotify.com/artist/4ZPJozo56gnUzwzCw2lrrM',
@@ -539,7 +550,14 @@ footer a:hover {
         const card = el('article', 'card');
         card.dataset.status = live ? 'live' : 'download';   // read by CSS and the status filter
 
-        card.appendChild(el('h3', '', p.name));
+        const title = el('h3');
+        if (p.emoji) {
+            const icon = el('span', 'emoji', p.emoji);
+            icon.setAttribute('aria-hidden', 'true');   // decorative: screen readers skip it
+            title.appendChild(icon);
+        }
+        title.appendChild(document.createTextNode(p.name));
+        card.appendChild(title);
 
         const badges = el('div', 'badges');
         badges.appendChild(el('span', 'badge' + (live ? ' live' : ''), live ? 'Live' : 'Downloadable'));
