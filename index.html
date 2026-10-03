@@ -101,8 +101,6 @@ h1 a:hover {
 
 /* =====================================================================
    BUTTONS
-   .control-button = header buttons, .btn = card buttons,
-   .accent-button  = the highlighted (primary) variant of either.
    ===================================================================== */
 .control-button, .btn {
     display: inline-block;
@@ -141,7 +139,7 @@ h1 a:hover {
 }
 
 /* =====================================================================
-   FILTERS (the pill buttons under the header)
+   FILTERS
    ===================================================================== */
 .filters {
     display: flex;
@@ -172,8 +170,6 @@ h1 a:hover {
 
 /* =====================================================================
    CATEGORIES AND CARDS
-   Each category is draggable by grabbing anywhere that is not a button
-   or link (see the drag code in the script).
    ===================================================================== */
 .category {
     cursor: grab;
@@ -208,11 +204,14 @@ body.is-dragging, body.is-dragging * {
     padding: 12px 14px;
     background-color: var(--entry-bg);
     border-radius: 6px;
-    border-left: 4px solid var(--download-color);   /* grey = downloadable */
+    border-left: 4px solid var(--download-color);
 }
-.card[data-status="live"] { border-left-color: var(--accent-color); }   /* accent = hosted */
+.card[data-status="live"] { border-left-color: var(--accent-color); }
 .card h3 { margin: 0 0 6px 0; font-size: 1.05em; }
-.card h3 .emoji { margin-right: 8px; }
+.card h3 .emoji { 
+    margin-right: 8px; 
+    filter: grayscale(100%) brightness(200%);
+}
 .badges { display: flex; gap: 6px; margin-bottom: 8px; }
 .badge {
     font-size: 0.75em;
@@ -418,28 +417,12 @@ footer a:hover {
 (() => {
     /* =================================================================
        PROJECTS  -  THE ONLY PART YOU NORMALLY NEED TO EDIT
-
-       To add a project, copy one entry below and change it:
-
-         category    Section heading. Projects with the same text are grouped
-                     together. Sections appear in the order they first show
-                     up in this list, so put a new category where you want it.
-                     (Visitors can drag sections around; that is saved in
-                     their own browser and does not change this list.)
-         emoji       Optional single emoji shown before the card title
-                     (makes the list easier to scan).
-         name        Card title.
-         description One or two short sentences.
-         app         Link to the hosted app/page. Set to null if the
-                     project is not hosted. This also decides the status:
-                     link = "Live" card, null = "Downloadable" card.
-         repo        Link to the GitHub repository (or null if external).
        ================================================================= */
     const PROJECTS = [
         // --- IT ---
         {
             category: 'IT',
-            emoji: '🔑',
+            emoji: '🔒',
             name: 'Password Generator',
             description: 'Strong passwords with set counts of digits, capitals and punctuation, plus a pronounceable mode.',
             app: 'https://mattiasmilger.github.io/Web-Password-Generator-by-Mattias/',
@@ -447,7 +430,7 @@ footer a:hover {
         },
         {
             category: 'IT',
-            emoji: '🖼️',
+            emoji: '✏️',
             name: 'Image Editor',
             description: 'Annotate screenshots with arrows, boxes and text, and censor sensitive areas. Made for guides.',
             app: 'https://mattiasmilger.github.io/Web-Image-Editor-by-Mattias/',
@@ -455,7 +438,7 @@ footer a:hover {
         },
         {
             category: 'IT',
-            emoji: '📲',
+            emoji: '⇋',
             name: 'Local Upload Server',
             description: 'Send files from your phone to your PC over Wi-Fi. Passcode protected, local network only.',
             app: null,
@@ -465,7 +448,7 @@ footer a:hover {
         // --- Learning ---
         {
             category: 'Learning',
-            emoji: '🧠',
+            emoji: '💡',
             name: 'Flashcards',
             description: 'Study with spaced repetition or a simple mode. Imports .txt and Anki exports.',
             app: 'https://mattiasmilger.github.io/Web-Flashcards-by-Mattias/',
@@ -473,7 +456,7 @@ footer a:hover {
         },
         {
             category: 'Learning',
-            emoji: '📰',
+            emoji: '📡',
             name: 'News Feed',
             description: 'An RSS reader that combines several sources per category, with search.',
             app: 'https://mattiasmilger.github.io/Web-News-Feed-by-Mattias/',
@@ -483,7 +466,7 @@ footer a:hover {
         // --- Games ---
         {
             category: 'Games',
-            emoji: '🧌',
+            emoji: '🕯️',
             name: 'Väsenväktaren',
             description: 'A turn-based creature collection game built on Swedish folklore.',
             app: 'https://mattiasmilger.github.io/Vasenvaktaren/',
@@ -493,7 +476,7 @@ footer a:hover {
         // --- AI ---
         {
             category: 'AI',
-            emoji: '📈',
+            emoji: '∿',
             name: 'AI Portfolio Optimizer',
             description: 'Reads your portfolio, fetches live prices and gets sell, buy and hold advice from Gemini.',
             app: null,
@@ -503,7 +486,7 @@ footer a:hover {
         // --- Creative ---
         {
             category: 'Creative',
-            emoji: '🎵',
+            emoji: '♫',
             name: 'Reine M (Spotify)',
             description: 'My music artist page where I release original music.',
             app: 'http://open.spotify.com/artist/4ZPJozo56gnUzwzCw2lrrM',
@@ -515,15 +498,14 @@ footer a:hover {
        Everything below turns the list above into the page.
        ================================================================= */
 
-    const THEME_KEY = 'portfolio_theme';              // localStorage key for the saved theme
-    const ORDER_KEY = 'portfolio_category_order';     // localStorage key for the saved section order
-    const filters = { status: 'all' };                // currently selected filters
+    const THEME_KEY = 'portfolio_theme';
+    const ORDER_KEY = 'portfolio_category_order';
+    const filters = { status: 'all' };
 
     const root = document.getElementById('projects');
-    const sections = new Map();                       // category name -> its <section>
-    const defaultOrder = [];                          // category names in the order of the list above
+    const sections = new Map();
+    const defaultOrder = [];
 
-    // Small helper: create an element with an optional class and text.
     function el(tag, className, text) {
         const node = document.createElement(tag);
         if (className) node.className = className;
@@ -531,7 +513,6 @@ footer a:hover {
         return node;
     }
 
-    // Create a link styled as a button that opens in a new tab.
     function linkButton(label, href, accent) {
         const a = el('a', 'btn' + (accent ? ' accent-button' : ''), label);
         a.href = href;
@@ -540,20 +521,16 @@ footer a:hover {
         return a;
     }
 
-    // ---------------- Cards ----------------
-
-    // Build one project card. Hosted/external apps get an open button;
-    // repositories get a GitHub button. If repo is null, only the app button shows.
     function buildCard(p) {
         const live = Boolean(p.app);
 
         const card = el('article', 'card');
-        card.dataset.status = live ? 'live' : 'download';   // read by CSS and the status filter
+        card.dataset.status = live ? 'live' : 'download';
 
         const title = el('h3');
         if (p.emoji) {
             const icon = el('span', 'emoji', p.emoji);
-            icon.setAttribute('aria-hidden', 'true');   // decorative: screen readers skip it
+            icon.setAttribute('aria-hidden', 'true');
             title.appendChild(icon);
         }
         title.appendChild(document.createTextNode(p.name));
@@ -579,9 +556,6 @@ footer a:hover {
         return card;
     }
 
-    // ---------------- Sections ----------------
-
-    // Group projects by category (in order of first appearance) and render them.
     function renderProjects() {
         PROJECTS.forEach(p => {
             if (!sections.has(p.category)) {
@@ -597,8 +571,6 @@ footer a:hover {
         });
     }
 
-    // ---------------- Section order ----------------
-
     function visibleSections() {
         return [...root.querySelectorAll('.category:not(.hidden)')];
     }
@@ -608,10 +580,9 @@ footer a:hover {
     }
 
     function saveOrder() {
-        try { localStorage.setItem(ORDER_KEY, JSON.stringify(currentOrder())); } catch (e) { /* ignore */ }
+        try { localStorage.setItem(ORDER_KEY, JSON.stringify(currentOrder())); } catch (e) {}
     }
 
-    // Put sections in the given order. Categories missing from it keep their default order after it.
     function applyOrder(order) {
         const full = order.filter(c => sections.has(c));
         defaultOrder.forEach(c => { if (!full.includes(c)) full.push(c); });
@@ -622,22 +593,17 @@ footer a:hover {
         try {
             const saved = JSON.parse(localStorage.getItem(ORDER_KEY));
             if (Array.isArray(saved)) applyOrder(saved);
-        } catch (e) { /* storage unavailable or bad data: keep the default */ }
+        } catch (e) {}
     }
 
     function bindReset() {
         document.getElementById('btn-reset-order').addEventListener('click', () => {
             applyOrder(defaultOrder);
-            try { localStorage.removeItem(ORDER_KEY); } catch (e) { /* ignore */ }
+            try { localStorage.removeItem(ORDER_KEY); } catch (e) {}
         });
     }
 
-    // ---------------- Dragging sections ----------------
-    // Press on a section (anywhere except a button or link) and drag.
-    // Mouse: starts after moving a few pixels. Touch/pen: press and hold
-    // briefly, so normal scrolling still works.
-
-    let drag = null;   // { section, id, type, x, y, cx, cy, active, timer }
+    let drag = null;
 
     function startDrag() {
         if (!drag || drag.active) return;
@@ -647,7 +613,7 @@ footer a:hover {
         document.body.classList.add('is-dragging');
         const sel = window.getSelection();
         if (sel) sel.removeAllRanges();
-        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e) { /* ignore */ } }
+        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e) {} }
         autoScroll();
     }
 
@@ -662,7 +628,6 @@ footer a:hover {
         drag = null;
     }
 
-    // Move the dragged section past whichever section the pointer is over.
     function reorderAt(y) {
         for (const s of visibleSections()) {
             if (s === drag.section) continue;
@@ -676,7 +641,6 @@ footer a:hover {
         }
     }
 
-    // Runs every frame while dragging: scrolls near the screen edges and keeps the order current.
     function autoScroll() {
         if (!drag || !drag.active) return;
         const edge = 70, y = drag.cy;
@@ -690,7 +654,7 @@ footer a:hover {
         root.addEventListener('pointerdown', e => {
             if (drag) return;
             if (e.pointerType === 'mouse' && e.button !== 0) return;
-            if (e.target.closest('a, button')) return;          // buttons and links stay clickable
+            if (e.target.closest('a, button')) return;
             const section = e.target.closest('.category');
             if (!section) return;
             drag = {
@@ -709,7 +673,7 @@ footer a:hover {
             const moved = Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
             if (drag.type === 'mouse') {
                 if (moved > 6) startDrag();
-            } else if (moved > 10) {                            // finger moved first: it is a scroll
+            } else if (moved > 10) {
                 clearTimeout(drag.timer);
                 drag = null;
             }
@@ -718,18 +682,13 @@ footer a:hover {
         document.addEventListener('pointerup', endDrag);
         document.addEventListener('pointercancel', endDrag);
 
-        // Stop the page scrolling under a finger that is dragging a section.
         document.addEventListener('touchmove', e => {
             if (drag && drag.active) e.preventDefault();
         }, { passive: false });
-        // No text selection or long-press menu while a drag is starting or running.
         document.addEventListener('selectstart', e => { if (drag && drag.active) e.preventDefault(); });
         root.addEventListener('contextmenu', e => { if (drag && drag.type !== 'mouse') e.preventDefault(); });
     }
 
-    // ---------------- Filters ----------------
-
-    // Show or hide cards and whole categories to match the active filters.
     function applyFilters() {
         const empty = document.getElementById('empty');
         let anyVisible = false;
@@ -741,14 +700,13 @@ footer a:hover {
 
         document.querySelectorAll('.category').forEach(section => {
             const visible = section.querySelector('.card:not(.hidden)') !== null;
-            section.classList.toggle('hidden', !visible);   // hide empty categories
+            section.classList.toggle('hidden', !visible);
             if (visible) anyVisible = true;
         });
 
         empty.classList.toggle('hidden', anyVisible);
     }
 
-    // Make a group of pill buttons act like a radio set for one filter.
     function bindFilterGroup(groupId, key) {
         const group = document.getElementById(groupId);
         group.addEventListener('click', e => {
@@ -760,8 +718,6 @@ footer a:hover {
         });
     }
 
-    // ---------------- Info modal ----------------
-
     function initInfo() {
         const modal = document.getElementById('info-modal');
         const openBtn = document.getElementById('btn-info');
@@ -772,27 +728,23 @@ footer a:hover {
 
         openBtn.addEventListener('click', open);
         closeBtn.addEventListener('click', close);
-        modal.addEventListener('click', e => { if (e.target === modal) close(); });   // click on the dark backdrop
+        modal.addEventListener('click', e => { if (e.target === modal) close(); });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) close();
         });
     }
 
-    // ---------------- Theme ----------------
-
-    // Dark is the default; a saved "light" choice overrides it.
     function initTheme() {
         try {
             if (localStorage.getItem(THEME_KEY) === 'light') document.body.classList.remove('dark-mode');
-        } catch (e) { /* storage unavailable (e.g. private mode): keep the default */ }
+        } catch (e) {}
 
         document.getElementById('btn-toggle-theme').addEventListener('click', () => {
             const dark = document.body.classList.toggle('dark-mode');
-            try { localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); } catch (e) { /* ignore */ }
+            try { localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); } catch (e) {}
         });
     }
 
-    // ---------------- Start ----------------
     initTheme();
     initInfo();
     renderProjects();
