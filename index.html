@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mattias Milger - Projects</title>
 <meta name="description" content="Projects by Mattias Milger.">
+<meta property="og:title" content="Mattias Milger - Projects" />
+<meta property="og:description" content="Projects by Mattias Milger." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
 <style>
 /* =====================================================================
    THEME
@@ -172,7 +176,6 @@ h1 a:hover {
    CATEGORIES AND CARDS
    ===================================================================== */
 .category {
-    cursor: grab;
     -webkit-touch-callout: none;
 }
 .category.dragging {
@@ -192,6 +195,9 @@ body.is-dragging, body.is-dragging * {
     font-size: 1.2em;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 8px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
 }
 .cards {
     display: grid;
@@ -205,8 +211,21 @@ body.is-dragging, body.is-dragging * {
     background-color: var(--entry-bg);
     border-radius: 6px;
     border-left: 4px solid var(--download-color);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 .card[data-status="live"] { border-left-color: var(--accent-color); }
+.card.dragging {
+    opacity: 0.8;
+    outline: 2px dashed var(--accent-color);
+    outline-offset: 4px;
+    box-shadow: 0 6px 18px var(--shadow-color);
+    transform: scale(1.02);
+    z-index: 10;
+}
 .card h3 { margin: 0 0 6px 0; font-size: 1.05em; }
 .card h3 .emoji { 
     margin-right: 8px; 
@@ -286,7 +305,7 @@ footer a:hover {
     max-height: 90dvh;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 25px 30px 15px 30px;
+    padding: 25px 30px 20px 30px;
     background-color: var(--container-bg);
     border-radius: 8px;
     box-shadow: 0 4px 20px var(--shadow-color);
@@ -333,10 +352,20 @@ footer a:hover {
 .info-box li:last-child { margin-bottom: 0; }
 .info-box li strong { color: var(--accent-color); }
 
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 5px;
+}
+.modal-footer .control-button {
+    min-width: 90px;
+}
+
 @media (max-width: 768px) {
     .container { padding: 15px; margin: 15px 10px; }
     .cards { grid-template-columns: 1fr; }
-    .modal-content { padding: 25px 18px 10px 18px; }
+    .modal-content { padding: 25px 18px 15px 18px; }
 }
 </style>
 </head>
@@ -394,10 +423,11 @@ footer a:hover {
             </ul>
         </div>
         <div class="info-box">
-            <h4>Arranging sections</h4>
+            <h4>Arranging sections and items</h4>
             <ul>
-                <li><strong>Move a section</strong> - click and drag anywhere on it, except on the buttons. On a touch screen, press and hold for a moment, then drag.</li>
-                <li><strong>Reset order</strong> - the small button at the bottom restores the default order.</li>
+                <li><strong>Move a section</strong> - click and drag vertically on any card or section to move the entire category up or down.</li>
+                <li><strong>Move an item</strong> - click and drag any card horizontally to reorder projects within their category. On a touch screen, press and hold for a moment, then drag.</li>
+                <li><strong>Reset order</strong> - the small button at the bottom restores the default order of both sections and items.</li>
             </ul>
         </div>
         <div class="info-box">
@@ -409,6 +439,10 @@ footer a:hover {
         <div class="info-box">
             <h4>Privacy</h4>
             <p>Nothing is sent anywhere. Only your theme choice and section order are saved in this browser.</p>
+        </div>
+
+        <div class="modal-footer">
+            <button id="btn-info-close-bottom" class="control-button" type="button">Close</button>
         </div>
     </div>
 </div>
@@ -500,11 +534,13 @@ footer a:hover {
 
     const THEME_KEY = 'portfolio_theme';
     const ORDER_KEY = 'portfolio_category_order';
+    const CARDS_ORDER_KEY = 'portfolio_cards_order';
     const filters = { status: 'all' };
 
     const root = document.getElementById('projects');
     const sections = new Map();
     const defaultOrder = [];
+    const defaultCardsOrder = new Map();
 
     function el(tag, className, text) {
         const node = document.createElement(tag);
@@ -526,6 +562,7 @@ footer a:hover {
 
         const card = el('article', 'card');
         card.dataset.status = live ? 'live' : 'download';
+        card.dataset.name = p.name;
 
         const title = el('h3');
         if (p.emoji) {
@@ -566,7 +603,9 @@ footer a:hover {
                 root.appendChild(section);
                 sections.set(p.category, section);
                 defaultOrder.push(p.category);
+                defaultCardsOrder.set(p.category, []);
             }
+            defaultCardsOrder.get(p.category).push(p.name);
             sections.get(p.category).querySelector('.cards').appendChild(buildCard(p));
         });
     }
@@ -579,14 +618,46 @@ footer a:hover {
         return [...root.querySelectorAll('.category')].map(s => s.dataset.category);
     }
 
+    function currentCardsOrder() {
+        const order = {};
+        sections.forEach((section, category) => {
+            order[category] = [...section.querySelectorAll('.card')].map(c => c.dataset.name).filter(Boolean);
+        });
+        return order;
+    }
+
     function saveOrder() {
         try { localStorage.setItem(ORDER_KEY, JSON.stringify(currentOrder())); } catch (e) {}
+    }
+
+    function saveCardsOrder() {
+        try { localStorage.setItem(CARDS_ORDER_KEY, JSON.stringify(currentCardsOrder())); } catch (e) {}
     }
 
     function applyOrder(order) {
         const full = order.filter(c => sections.has(c));
         defaultOrder.forEach(c => { if (!full.includes(c)) full.push(c); });
         full.forEach(c => root.appendChild(sections.get(c)));
+    }
+
+    function applyCardsOrder(orderMap) {
+        if (!orderMap || typeof orderMap !== 'object') return;
+        Object.entries(orderMap).forEach(([category, cardNames]) => {
+            const section = sections.get(category);
+            if (!section || !Array.isArray(cardNames)) return;
+            const container = section.querySelector('.cards');
+            if (!container) return;
+
+            const cardMap = new Map();
+            container.querySelectorAll('.card').forEach(c => {
+                if (c.dataset.name) cardMap.set(c.dataset.name, c);
+            });
+
+            cardNames.forEach(name => {
+                const card = cardMap.get(name);
+                if (card) container.appendChild(card);
+            });
+        });
     }
 
     function loadOrder() {
@@ -596,11 +667,37 @@ footer a:hover {
         } catch (e) {}
     }
 
-    function bindReset() {
-        document.getElementById('btn-reset-order').addEventListener('click', () => {
-            applyOrder(defaultOrder);
-            try { localStorage.removeItem(ORDER_KEY); } catch (e) {}
+    function loadCardsOrder() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(CARDS_ORDER_KEY));
+            if (saved) applyCardsOrder(saved);
+        } catch (e) {}
+    }
+
+    function resetAllOrders() {
+        applyOrder(defaultOrder);
+        defaultCardsOrder.forEach((names, category) => {
+            const section = sections.get(category);
+            if (!section) return;
+            const container = section.querySelector('.cards');
+            if (!container) return;
+            const cardMap = new Map();
+            container.querySelectorAll('.card').forEach(c => {
+                if (c.dataset.name) cardMap.set(c.dataset.name, c);
+            });
+            names.forEach(name => {
+                const card = cardMap.get(name);
+                if (card) container.appendChild(card);
+            });
         });
+        try {
+            localStorage.removeItem(ORDER_KEY);
+            localStorage.removeItem(CARDS_ORDER_KEY);
+        } catch (e) {}
+    }
+
+    function bindReset() {
+        document.getElementById('btn-reset-order').addEventListener('click', resetAllOrders);
     }
 
     let drag = null;
@@ -609,7 +706,8 @@ footer a:hover {
         if (!drag || drag.active) return;
         drag.active = true;
         clearTimeout(drag.timer);
-        drag.section.classList.add('dragging');
+        if (drag.card) drag.card.classList.add('dragging');
+        if (drag.section) drag.section.classList.add('dragging');
         document.body.classList.add('is-dragging');
         const sel = window.getSelection();
         if (sel) sel.removeAllRanges();
@@ -621,21 +719,53 @@ footer a:hover {
         if (!drag || (e && e.pointerId !== drag.id)) return;
         clearTimeout(drag.timer);
         if (drag.active) {
-            drag.section.classList.remove('dragging');
+            if (drag.card) drag.card.classList.remove('dragging');
+            if (drag.section) drag.section.classList.remove('dragging');
             document.body.classList.remove('is-dragging');
             saveOrder();
+            saveCardsOrder();
         }
         drag = null;
     }
 
-    function reorderAt(y) {
+    function reorderSectionsAt(y) {
+        if (!drag || !drag.section || !drag.active) return;
         for (const s of visibleSections()) {
             if (s === drag.section) continue;
             const r = s.getBoundingClientRect();
             if (y >= r.top && y <= r.bottom) {
-                const after = y > r.top + r.height / 2;
-                const ref = after ? s.nextSibling : s;
-                if (ref !== drag.section) root.insertBefore(drag.section, ref);
+                const isAfter = y > r.top + r.height / 2;
+                if (isAfter && s.nextElementSibling !== drag.section) {
+                    s.after(drag.section);
+                } else if (!isAfter && s.previousElementSibling !== drag.section) {
+                    s.before(drag.section);
+                }
+                break;
+            }
+        }
+    }
+
+    function reorderCardsAt(x, y) {
+        if (!drag || !drag.card || !drag.active) return;
+        const container = drag.parentContainer;
+        if (!container) return;
+        const siblings = [...container.querySelectorAll('.card:not(.hidden)')];
+        if (siblings.length <= 1) return;
+
+        for (const s of siblings) {
+            if (s === drag.card) continue;
+            const r = s.getBoundingClientRect();
+            const padX = 12;
+            const padY = 16;
+            if (x >= r.left - padX && x <= r.right + padX && y >= r.top - padY && y <= r.bottom + padY) {
+                const targetTop = drag.card.getBoundingClientRect().top;
+                const isSameRow = Math.abs(r.top - targetTop) < 30;
+                const isAfter = isSameRow ? (x > r.left + r.width / 2) : (y > r.top + r.height / 2);
+                if (isAfter && s.nextElementSibling !== drag.card) {
+                    s.after(drag.card);
+                } else if (!isAfter && s.previousElementSibling !== drag.card) {
+                    s.before(drag.card);
+                }
                 break;
             }
         }
@@ -646,7 +776,10 @@ footer a:hover {
         const edge = 70, y = drag.cy;
         if (y < edge) window.scrollBy(0, -Math.ceil((edge - y) / 5));
         else if (y > window.innerHeight - edge) window.scrollBy(0, Math.ceil((y - (window.innerHeight - edge)) / 5));
-        reorderAt(y);
+        if (drag.card) {
+            reorderCardsAt(drag.cx, drag.cy);
+        }
+        reorderSectionsAt(drag.cy);
         requestAnimationFrame(autoScroll);
     }
 
@@ -655,12 +788,21 @@ footer a:hover {
             if (drag) return;
             if (e.pointerType === 'mouse' && e.button !== 0) return;
             if (e.target.closest('a, button')) return;
+
+            const card = e.target.closest('.card');
             const section = e.target.closest('.category');
             if (!section) return;
+
             drag = {
-                section, id: e.pointerId, type: e.pointerType,
-                x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY,
-                active: false, timer: null
+                card: card || null,
+                section: section,
+                parentContainer: card ? card.parentElement : null,
+                id: e.pointerId,
+                type: e.pointerType,
+                x: e.clientX, y: e.clientY,
+                cx: e.clientX, cy: e.clientY,
+                active: false,
+                timer: null
             };
             if (e.pointerType !== 'mouse') drag.timer = setTimeout(startDrag, 350);
         });
@@ -669,13 +811,19 @@ footer a:hover {
             if (!drag || e.pointerId !== drag.id) return;
             drag.cx = e.clientX;
             drag.cy = e.clientY;
-            if (drag.active) return;
-            const moved = Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
-            if (drag.type === 'mouse') {
-                if (moved > 6) startDrag();
-            } else if (moved > 10) {
-                clearTimeout(drag.timer);
-                drag = null;
+            if (!drag.active) {
+                const moved = Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
+                if (drag.type === 'mouse') {
+                    if (moved > 6) startDrag();
+                } else if (moved > 10) {
+                    clearTimeout(drag.timer);
+                    drag = null;
+                }
+            } else {
+                if (drag.card) {
+                    reorderCardsAt(drag.cx, drag.cy);
+                }
+                reorderSectionsAt(drag.cy);
             }
         });
 
@@ -722,12 +870,14 @@ footer a:hover {
         const modal = document.getElementById('info-modal');
         const openBtn = document.getElementById('btn-info');
         const closeBtn = document.getElementById('btn-info-close');
+        const closeBtnBottom = document.getElementById('btn-info-close-bottom');
 
         const open = () => { modal.classList.remove('hidden'); closeBtn.focus(); };
         const close = () => { modal.classList.add('hidden'); openBtn.focus(); };
 
         openBtn.addEventListener('click', open);
         closeBtn.addEventListener('click', close);
+        if (closeBtnBottom) closeBtnBottom.addEventListener('click', close);
         modal.addEventListener('click', e => { if (e.target === modal) close(); });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) close();
@@ -749,6 +899,7 @@ footer a:hover {
     initInfo();
     renderProjects();
     loadOrder();
+    loadCardsOrder();
     bindDrag();
     bindReset();
     bindFilterGroup('filter-status', 'status');
