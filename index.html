@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mattias Milger - Projects</title>
-<meta name="description" content="Projects by Mattias Milger.">
-<meta property="og:title" content="Mattias Milger - Projects" />
-<meta property="og:description" content="Projects by Mattias Milger." />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary_large_image" />
+<meta name="description" content="Personal project portfolio landing page showcasing web apps and projects by Mattias Milger.">
+<meta property="og:title" content="Mattias Milger - Projects">
+<meta property="og:description" content="Personal project portfolio landing page showcasing web apps and projects by Mattias Milger.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* =====================================================================
    THEME
@@ -425,8 +425,8 @@ footer a:hover {
         <div class="info-box">
             <h4>Arranging sections and items</h4>
             <ul>
-                <li><strong>Move a section</strong> - click and drag vertically on any card or section to move the entire category up or down.</li>
-                <li><strong>Move an item</strong> - click and drag any card horizontally to reorder projects within their category. On a touch screen, press and hold for a moment, then drag.</li>
+                <li><strong>Move a section</strong> - click and drag vertically on any category header (or card) to move the entire category up or down. When targeting the category directly, it displays the green dashed outline.</li>
+                <li><strong>Move an item</strong> - click and drag any card horizontally or vertically to reorder projects within their category (or vertically across categories). When targeting an item, only that card receives the outline—the whole category does not get outlined.</li>
                 <li><strong>Reset order</strong> - the small button at the bottom restores the default order of both sections and items.</li>
             </ul>
         </div>
@@ -706,8 +706,14 @@ footer a:hover {
         if (!drag || drag.active) return;
         drag.active = true;
         clearTimeout(drag.timer);
-        if (drag.card) drag.card.classList.add('dragging');
-        if (drag.section) drag.section.classList.add('dragging');
+        // CRITICAL FIX: Only outline the targeted element!
+        // When targeting a card: only drag.card gets .dragging (NOT drag.section).
+        // When targeting a category: drag.card is null, so drag.section gets .dragging!
+        if (drag.card) {
+            drag.card.classList.add('dragging');
+        } else if (drag.section) {
+            drag.section.classList.add('dragging');
+        }
         document.body.classList.add('is-dragging');
         const sel = window.getSelection();
         if (sel) sel.removeAllRanges();
