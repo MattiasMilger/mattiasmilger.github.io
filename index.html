@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mattias Milger - Projects</title>
-<meta name="description" content="Personal project portfolio landing page showcasing web apps and projects by Mattias Milger.">
+<meta name="description" content="Personal project portfolio landing page showcasing web apps and projects by Mattias Milger with Cyber Harmonic Datawaves.">
 <meta property="og:title" content="Mattias Milger - Projects">
 <meta property="og:description" content="Personal project portfolio landing page showcasing web apps and projects by Mattias Milger.">
 <meta property="og:type" content="website">
@@ -66,18 +66,21 @@ body {
     background-color: var(--bg-color);
     color: var(--fg-color);
     transition: background-color 0.3s, color 0.3s;
+    position: relative;
 }
 .hidden { display: none !important; }
 
+/* Clean container without harsh outer glowing border that collides with scrollbars */
 .container {
     width: 100%;
     max-width: 900px;
     background-color: var(--container-bg);
-    padding: 20px;
+    padding: 24px 20px;
     margin: 20px auto;
     border-radius: 8px;
-    box-shadow: 0 4px 12px var(--shadow-color);
+    box-shadow: 0 4px 16px var(--shadow-color);
     transition: background-color 0.3s, box-shadow 0.3s;
+    position: relative;
 }
 
 h1 {
@@ -88,19 +91,22 @@ h1 {
 h1 a {
     color: var(--accent-color);
     text-decoration: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, text-shadow 0.2s;
 }
 h1 a:hover {
-    opacity: 0.8;
+    opacity: 0.85;
     text-decoration: underline;
+}
+body.dark-mode h1 a {
+    text-shadow: 0 0 14px color-mix(in srgb, var(--accent-color) 45%, transparent);
 }
 .subtitle {
     text-align: center;
     font-size: 1.1em;
     font-weight: normal;
-    margin: 0 0 20px 0;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 15px;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 /* =====================================================================
@@ -119,7 +125,7 @@ h1 a:hover {
     text-align: center;
     background-color: var(--button-bg);
     color: var(--fg-color);
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
 .control-button:hover, .btn:hover { background-color: var(--select-bg); }
 .accent-button {
@@ -215,9 +221,13 @@ body.is-dragging, body.is-dragging * {
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+    position: relative;
 }
 .card[data-status="live"] { border-left-color: var(--accent-color); }
+body.dark-mode .card[data-status="live"] {
+    box-shadow: 0 2px 10px color-mix(in srgb, var(--accent-color) 12%, transparent);
+}
 .card.dragging {
     opacity: 0.8;
     outline: 2px dashed var(--accent-color);
@@ -225,6 +235,9 @@ body.is-dragging, body.is-dragging * {
     box-shadow: 0 6px 18px var(--shadow-color);
     transform: scale(1.02);
     z-index: 10;
+}
+.card:hover {
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 .card h3 { margin: 0 0 6px 0; font-size: 1.05em; }
 .card h3 .emoji { 
@@ -254,7 +267,7 @@ body.is-dragging, body.is-dragging * {
 
 footer {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid var(--border-color);
 }
@@ -363,16 +376,84 @@ footer a:hover {
 }
 
 @media (max-width: 768px) {
-    .container { padding: 15px; margin: 15px 10px; }
+    /* Seamless mobile padding without colliding with scrollbar */
+    .container {
+        padding: 18px 12px;
+        margin: 10px auto;
+        border-radius: 6px;
+        box-shadow: none;
+    }
     .cards { grid-template-columns: 1fr; }
     .modal-content { padding: 25px 18px 15px 18px; }
 }
+
+/* =====================================================================
+   CYBERPUNK EFFECT: HARMONIC DATAWAVE HORIZONS (TOP & BOTTOM)
+   To remove this effect completely, delete this CSS block, the two
+   .cyber-datawave-wrap elements in HTML, and initDataWaves() in the script.
+   ===================================================================== */
+
+/* Harmonic Sine Datawave containers (Top & Bottom) */
+.cyber-datawave-wrap {
+    width: 100%;
+    height: 48px;
+    position: relative;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    /* Softly fades out at left and right edges */
+    mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+
+.cyber-datawave-wrap.top-wave {
+    margin: 2px 0 16px 0;
+}
+
+.cyber-datawave-wrap.bottom-wave {
+    margin: 24px 0 8px 0;
+}
+
+.cyber-datawave-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* Subtle glow filter on wave strokes in dark mode */
+body.dark-mode .cyber-datawave-svg {
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent-color) 60%, transparent));
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .cyber-datawave-wrap { opacity: 0.6; }
+}
+/* =====================================================================
+   END CYBERPUNK EFFECT
+   ===================================================================== */
 </style>
-</head>
+<script src="/_aistudio-iframe.js?v=6634132a"></script></head>
 <body class="dark-mode">
+
 <div class="container">
     <h1><a href="https://github.com/MattiasMilger" target="_blank" rel="noopener noreferrer">Mattias Milger</a></h1>
     <h2 class="subtitle">My projects</h2>
+
+    <!-- =====================================================================
+         CYBERPUNK EFFECT: TOP HARMONIC DATAWAVE (HTML)
+         ===================================================================== -->
+    <div class="cyber-datawave-wrap top-wave" aria-hidden="true">
+        <svg class="cyber-datawave-svg" viewBox="0 0 900 48" preserveAspectRatio="none">
+            <path id="top-wave-1" fill="none" stroke="var(--accent-color)" stroke-width="2" opacity="0.9" />
+            <path id="top-wave-2" fill="none" stroke="var(--accent-color)" stroke-width="1.3" opacity="0.5" />
+            <path id="top-wave-3" fill="none" stroke="var(--accent-color)" stroke-width="0.8" opacity="0.25" />
+        </svg>
+    </div>
+    <!-- =====================================================================
+         END TOP DATAWAVE
+         ===================================================================== -->
 
     <div class="header-controls">
         <button id="btn-toggle-theme" class="control-button" type="button">◐</button>
@@ -394,6 +475,20 @@ footer a:hover {
 
     <p id="empty" class="empty hidden">No projects match these filters.</p>
     <noscript><p class="empty">This page needs JavaScript to list the projects.</p></noscript>
+
+    <!-- =====================================================================
+         CYBERPUNK EFFECT: BOTTOM HARMONIC DATAWAVE (HTML)
+         ===================================================================== -->
+    <div class="cyber-datawave-wrap bottom-wave" aria-hidden="true">
+        <svg class="cyber-datawave-svg" viewBox="0 0 900 48" preserveAspectRatio="none">
+            <path id="bottom-wave-1" fill="none" stroke="var(--accent-color)" stroke-width="2" opacity="0.9" />
+            <path id="bottom-wave-2" fill="none" stroke="var(--accent-color)" stroke-width="1.3" opacity="0.5" />
+            <path id="bottom-wave-3" fill="none" stroke="var(--accent-color)" stroke-width="0.8" opacity="0.25" />
+        </svg>
+    </div>
+    <!-- =====================================================================
+         END BOTTOM DATAWAVE
+         ===================================================================== -->
 
     <footer>
         <button id="btn-reset-order" class="link-button" type="button">Reset order</button>
@@ -550,11 +645,13 @@ footer a:hover {
     }
 
     function linkButton(label, href, accent) {
-        const a = el('a', 'btn' + (accent ? ' accent-button' : ''), label);
-        a.href = href;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        return a;
+        const link = document.createElement('a');
+        link.className = 'btn' + (accent ? ' accent-button' : '');
+        link.textContent = label;
+        link.href = href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        return link;
     }
 
     function buildCard(p) {
@@ -706,9 +803,6 @@ footer a:hover {
         if (!drag || drag.active) return;
         drag.active = true;
         clearTimeout(drag.timer);
-        // CRITICAL FIX: Only outline the targeted element!
-        // When targeting a card: only drag.card gets .dragging (NOT drag.section).
-        // When targeting a category: drag.card is null, so drag.section gets .dragging!
         if (drag.card) {
             drag.card.classList.add('dragging');
         } else if (drag.section) {
@@ -901,6 +995,73 @@ footer a:hover {
         });
     }
 
+    /* =====================================================================
+       CYBERPUNK EFFECT: HARMONIC DATAWAVES (TOP & BOTTOM) - SCRIPT
+       Oscillates continuous harmonic sine waves across the top & bottom.
+       Zero mouse/touch tracking, 60fps, perfectly smooth.
+       Delete this block if removing the effect.
+       ===================================================================== */
+    function initDataWaves() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const topW1 = document.getElementById('top-wave-1');
+        const topW2 = document.getElementById('top-wave-2');
+        const topW3 = document.getElementById('top-wave-3');
+
+        const botW1 = document.getElementById('bottom-wave-1');
+        const botW2 = document.getElementById('bottom-wave-2');
+        const botW3 = document.getElementById('bottom-wave-3');
+
+        if (!topW1 || !botW1) return;
+
+        let t = 0;
+        const width = 900;
+        const height = 48;
+        const midY = height / 2;
+
+        function animate() {
+            t += 0.028;
+
+            let tPath1 = `M 0 ${midY}`, tPath2 = `M 0 ${midY}`, tPath3 = `M 0 ${midY}`;
+            let bPath1 = `M 0 ${midY}`, bPath2 = `M 0 ${midY}`, bPath3 = `M 0 ${midY}`;
+
+            for (let x = 0; x <= width; x += 12) {
+                // Top wave harmonic frequencies
+                const ty1 = midY + Math.sin(x * 0.016 + t) * 11 * Math.sin(x * 0.0035 + t * 0.4);
+                const ty2 = midY + Math.cos(x * 0.022 - t * 0.75) * 8 * Math.sin(x * 0.005 + t * 0.25);
+                const ty3 = midY + Math.sin(x * 0.03 + t * 1.2) * 5 * Math.cos(x * 0.007 - t * 0.5);
+
+                tPath1 += ` L ${x} ${ty1.toFixed(1)}`;
+                tPath2 += ` L ${x} ${ty2.toFixed(1)}`;
+                tPath3 += ` L ${x} ${ty3.toFixed(1)}`;
+
+                // Bottom wave counter-phase harmonics
+                const by1 = midY + Math.cos(x * 0.014 - t * 0.9) * 11 * Math.cos(x * 0.004 + t * 0.35);
+                const by2 = midY + Math.sin(x * 0.024 + t * 0.65) * 8 * Math.sin(x * 0.006 - t * 0.3);
+                const by3 = midY + Math.cos(x * 0.032 - t * 1.1) * 5 * Math.sin(x * 0.008 + t * 0.45);
+
+                bPath1 += ` L ${x} ${by1.toFixed(1)}`;
+                bPath2 += ` L ${x} ${by2.toFixed(1)}`;
+                bPath3 += ` L ${x} ${by3.toFixed(1)}`;
+            }
+
+            topW1.setAttribute('d', tPath1);
+            topW2.setAttribute('d', tPath2);
+            topW3.setAttribute('d', tPath3);
+
+            botW1.setAttribute('d', bPath1);
+            botW2.setAttribute('d', bPath2);
+            botW3.setAttribute('d', bPath3);
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    }
+    /* =====================================================================
+       END CYBERPUNK EFFECT JS
+       ===================================================================== */
+
     initTheme();
     initInfo();
     renderProjects();
@@ -909,6 +1070,7 @@ footer a:hover {
     bindDrag();
     bindReset();
     bindFilterGroup('filter-status', 'status');
+    initDataWaves();
 })();
 </script>
 </body>
