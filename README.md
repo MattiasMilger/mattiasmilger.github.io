@@ -25,3 +25,13 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 - **Moving a Card**: Click and drag any card to reorder it within its category or move it across categories. Only the dragged card gets outlined.
 - **Moving a Category**: Click and drag a category header to reorder the entire category.
 - **Reset**: Click "Reset order" at the bottom to restore the default order.
+
+## Browser Support
+
+Works in all modern browsers (Chrome, Firefox, Edge, Safari). Requires JavaScript enabled.
+
+## Credits
+
+**Developer**: Mattias Milger  
+**Email**: mattias.r.milger@gmail.com  
+**GitHub**: [MattiasMilger](https://github.com/MattiasMilger)
