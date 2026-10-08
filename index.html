@@ -399,7 +399,10 @@ footer a:hover {
     height: 48px;
     position: relative;
     overflow: hidden;
-    pointer-events: none;
+    /* Clickable on purpose: tapping a wave sends a ripple through it (easter egg) */
+    pointer-events: auto;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
     /* Softly fades out at left and right edges */
@@ -426,9 +429,29 @@ body.dark-mode .cyber-datawave-svg {
     filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent-color) 60%, transparent));
 }
 
+/* Easter egg: flat ellipse that expands along the wave. It fades out well
+   before reaching the strip's top/bottom edges, so no hard cut-off shows. */
+.wave-ripple-ring {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 6px;
+    transform: translate(-50%, -50%);
+    border: 1.5px solid var(--accent-color);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.9;
+    box-shadow: 0 0 6px var(--accent-color);
+    animation: wave-ripple-ring 0.9s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+@keyframes wave-ripple-ring {
+    to { width: 360px; height: 26px; opacity: 0; }
+}
+
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
     .cyber-datawave-wrap { opacity: 0.6; }
+    .wave-ripple-ring { display: none; }
 }
 /* =====================================================================
    END CYBERPUNK EFFECT
@@ -1019,26 +1042,74 @@ body.dark-mode .cyber-datawave-svg {
         const height = 48;
         const midY = height / 2;
 
+        /* ---- Easter egg: click / tap a wave to send a ripple along it ---- */
+        const ripples = [];
+        const RIPPLE_SPEED = 420;     // SVG units per second
+        const RIPPLE_LIFE = 2.6;      // seconds
+        const LAYER_AMP = [1, 0.7, 0.45];
+        let now = performance.now();
+
+        // Soft limit: keeps the wave inside the strip so ripple peaks never get clipped
+        const MAX_SWING = 19;
+        const limitY = y => midY + MAX_SWING * Math.tanh((y - midY) / MAX_SWING);
+
+        function rippleOffset(side, layer, x) {
+            let d = 0;
+            for (const r of ripples) {
+                if (r.side !== side) continue;
+                const age = (now - r.t0) / 1000;
+                const dist = Math.abs(x - r.x);
+                const front = age * RIPPLE_SPEED;
+                const env = Math.exp(-Math.pow((dist - front) / 80, 2));
+                d += r.amp * Math.exp(-age * 1.5) * env * Math.sin((dist - front) * 0.085);
+            }
+            return d * LAYER_AMP[layer];
+        }
+
+        document.querySelectorAll('.cyber-datawave-wrap').forEach(wrap => {
+            const side = wrap.classList.contains('top-wave') ? 'top' : 'bottom';
+            wrap.addEventListener('pointerdown', e => {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                const rect = wrap.getBoundingClientRect();
+                ripples.push({
+                    side,
+                    x: ((e.clientX - rect.left) / rect.width) * width,
+                    t0: performance.now(),
+                    amp: 15
+                });
+                const ring = document.createElement('span');
+                ring.className = 'wave-ripple-ring';
+                ring.style.left = (e.clientX - rect.left) + 'px';
+                wrap.appendChild(ring);
+                ring.addEventListener('animationend', () => ring.remove());
+            });
+        });
+
         function animate() {
             t += 0.028;
+            now = performance.now();
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                if ((now - ripples[i].t0) / 1000 > RIPPLE_LIFE) ripples.splice(i, 1);
+            }
+            const hasRipples = ripples.length > 0;
 
             let tPath1 = `M 0 ${midY}`, tPath2 = `M 0 ${midY}`, tPath3 = `M 0 ${midY}`;
             let bPath1 = `M 0 ${midY}`, bPath2 = `M 0 ${midY}`, bPath3 = `M 0 ${midY}`;
 
             for (let x = 0; x <= width; x += 12) {
                 // Top wave harmonic frequencies
-                const ty1 = midY + Math.sin(x * 0.016 + t) * 11 * Math.sin(x * 0.0035 + t * 0.4);
-                const ty2 = midY + Math.cos(x * 0.022 - t * 0.75) * 8 * Math.sin(x * 0.005 + t * 0.25);
-                const ty3 = midY + Math.sin(x * 0.03 + t * 1.2) * 5 * Math.cos(x * 0.007 - t * 0.5);
+                const ty1 = limitY(midY + Math.sin(x * 0.016 + t) * 11 * Math.sin(x * 0.0035 + t * 0.4) + (hasRipples ? rippleOffset('top', 0, x) : 0));
+                const ty2 = limitY(midY + Math.cos(x * 0.022 - t * 0.75) * 8 * Math.sin(x * 0.005 + t * 0.25) + (hasRipples ? rippleOffset('top', 1, x) : 0));
+                const ty3 = limitY(midY + Math.sin(x * 0.03 + t * 1.2) * 5 * Math.cos(x * 0.007 - t * 0.5) + (hasRipples ? rippleOffset('top', 2, x) : 0));
 
                 tPath1 += ` L ${x} ${ty1.toFixed(1)}`;
                 tPath2 += ` L ${x} ${ty2.toFixed(1)}`;
                 tPath3 += ` L ${x} ${ty3.toFixed(1)}`;
 
                 // Bottom wave counter-phase harmonics
-                const by1 = midY + Math.cos(x * 0.014 - t * 0.9) * 11 * Math.cos(x * 0.004 + t * 0.35);
-                const by2 = midY + Math.sin(x * 0.024 + t * 0.65) * 8 * Math.sin(x * 0.006 - t * 0.3);
-                const by3 = midY + Math.cos(x * 0.032 - t * 1.1) * 5 * Math.sin(x * 0.008 + t * 0.45);
+                const by1 = limitY(midY + Math.cos(x * 0.014 - t * 0.9) * 11 * Math.cos(x * 0.004 + t * 0.35) + (hasRipples ? rippleOffset('bottom', 0, x) : 0));
+                const by2 = limitY(midY + Math.sin(x * 0.024 + t * 0.65) * 8 * Math.sin(x * 0.006 - t * 0.3) + (hasRipples ? rippleOffset('bottom', 1, x) : 0));
+                const by3 = limitY(midY + Math.cos(x * 0.032 - t * 1.1) * 5 * Math.sin(x * 0.008 + t * 0.45) + (hasRipples ? rippleOffset('bottom', 2, x) : 0));
 
                 bPath1 += ` L ${x} ${by1.toFixed(1)}`;
                 bPath2 += ` L ${x} ${by2.toFixed(1)}`;
