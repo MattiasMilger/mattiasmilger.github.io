@@ -26,13 +26,13 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 - **Moving a Category**: Click and drag a category header to reorder the entire category.
 - **Reset**: Click "Reset order" at the bottom to restore the default order.
 
-## Discussions
-
-Questions, ideas or feedback? Share your thoughts in the [GitHub Discussions](https://github.com/MattiasMilger/mattiasmilger.github.io/discussions).
-
 ## Browser Support
 
 Works in all modern browsers (Chrome, Firefox, Edge, Safari). Requires JavaScript enabled.
+
+## Discussions
+
+Questions, ideas or feedback? Share your thoughts in the [GitHub Discussions](https://github.com/MattiasMilger/mattiasmilger.github.io/discussions).
 
 ## Credits
 
