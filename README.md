@@ -11,11 +11,11 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 **Run locally:** open `index.html` in a modern browser. No build tools or dependencies required.
 
 ### Quick Links (Live Sites & Repositories)
+- **Flashcards**: [Live App](https://mattiasmilger.github.io/Web-Flashcards-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-Flashcards-by-Mattias)
+- **News Feed**: [Live App](https://mattiasmilger.github.io/Web-News-Feed-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-News-Feed-by-Mattias)
 - **Password Generator**: [Live App](https://mattiasmilger.github.io/Web-Password-Generator-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-Password-Generator-by-Mattias)
 - **Image Editor**: [Live App](https://mattiasmilger.github.io/Web-Image-Editor-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-Image-Editor-by-Mattias)
 - **Local Upload Server**: [GitHub](https://github.com/MattiasMilger/Local-Upload-Server)
-- **Flashcards**: [Live App](https://mattiasmilger.github.io/Web-Flashcards-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-Flashcards-by-Mattias)
-- **News Feed**: [Live App](https://mattiasmilger.github.io/Web-News-Feed-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-News-Feed-by-Mattias)
 - **Väsenväktaren**: [Live App](https://mattiasmilger.github.io/Vasenvaktaren/) | [GitHub](https://github.com/MattiasMilger/Vasenvaktaren)
 - **AI Portfolio Optimizer**: [GitHub](https://github.com/MattiasMilger/AI-Portfolio-Optimizer)
 - **Reine M (Spotify)**: [Spotify Artist Page](http://open.spotify.com/artist/4ZPJozo56gnUzwzCw2lrrM)
