@@ -16,6 +16,7 @@ A landing page that links to all of my projects, built with vanilla HTML, CSS, a
 - **Password Generator**: [Live App](https://mattiasmilger.github.io/Web-Password-Generator-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-Password-Generator-by-Mattias)
 - **Image Editor**: [Live App](https://mattiasmilger.github.io/Web-Image-Editor-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-Image-Editor-by-Mattias)
 - **Local Upload Server**: [GitHub](https://github.com/MattiasMilger/Local-Upload-Server)
+- **Network Manager**: [Live App](https://mattiasmilger.github.io/Web-Network-Manager-by-Mattias/) | [GitHub](https://github.com/MattiasMilger/Web-Network-Manager-by-Mattias)
 - **Väsenväktaren**: [Live App](https://mattiasmilger.github.io/Vasenvaktaren/) | [GitHub](https://github.com/MattiasMilger/Vasenvaktaren)
 - **AI Portfolio Optimizer**: [GitHub](https://github.com/MattiasMilger/AI-Portfolio-Optimizer)
 - **Reine M (Spotify)**: [Spotify Artist Page](http://open.spotify.com/artist/4ZPJozo56gnUzwzCw2lrrM)
