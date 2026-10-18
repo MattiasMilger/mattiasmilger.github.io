@@ -210,6 +210,14 @@ body.is-dragging, body.is-dragging * {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 12px;
 }
+/* Balanced rows: on desktop the grid has 6 tracks and each card spans
+   6 / (cards in its row). balanceCards() in the script works out the row
+   split (e.g. 7 cards -> 3 + 2 + 2) and sets --span on every visible card.
+   On mobile the grid is a single column and --span is ignored. */
+@media (min-width: 769px) {
+    .cards { grid-template-columns: repeat(6, 1fr); }
+    .card { grid-column: span var(--span, 2); }
+}
 .card {
     display: flex;
     flex-direction: column;
@@ -973,6 +981,45 @@ body.dark-mode .cyber-datawave-svg {
         root.addEventListener('contextmenu', e => { if (drag && drag.type !== 'mouse') e.preventDefault(); });
     }
 
+    /* Split n cards into evenly sized rows of at most maxCols,
+       larger rows first: (7, 3) -> [3, 2, 2], (4, 3) -> [2, 2]. */
+    function rowSizes(n, maxCols) {
+        if (n <= 0) return [];
+        const rows = Math.ceil(n / maxCols);
+        const base = Math.floor(n / rows);
+        const extra = n % rows;
+        return Array.from({ length: rows }, (_, i) => base + (i < extra ? 1 : 0));
+    }
+
+    function balanceCards() {
+        const MIN_CARD = 260, GAP = 12;
+        const width = root.clientWidth;
+        const maxCols = Math.max(1, Math.min(3, Math.floor((width + GAP) / (MIN_CARD + GAP))));
+        document.querySelectorAll('.cards').forEach(container => {
+            const cards = [...container.querySelectorAll('.card:not(.hidden)')];
+            const sizes = rowSizes(cards.length, maxCols);
+            let i = 0;
+            sizes.forEach(size => {
+                for (let k = 0; k < size; k++) cards[i++].style.setProperty('--span', 6 / size);
+            });
+        });
+    }
+
+    function initBalancedCards() {
+        let queued = false;
+        const run = () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(() => { queued = false; balanceCards(); });
+        };
+        // Re-balance whenever cards are added, reordered, hidden or shown.
+        new MutationObserver(run).observe(root, {
+            childList: true, subtree: true, attributes: true, attributeFilter: ['class']
+        });
+        window.addEventListener('resize', run);
+        balanceCards();
+    }
+
     function applyFilters() {
         const empty = document.getElementById('empty');
         let anyVisible = false;
@@ -1158,6 +1205,7 @@ body.dark-mode .cyber-datawave-svg {
     bindDrag();
     bindReset();
     bindFilterGroup('filter-status', 'status');
+    initBalancedCards();
     initDataWaves();
 })();
 </script>
