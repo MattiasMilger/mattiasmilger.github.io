@@ -252,6 +252,14 @@ body.dark-mode .card[data-status="live"] {
     margin-right: 8px; 
     filter: grayscale(100%) brightness(200%);
 }
+.card h3 .emoji-svg {
+    display: inline-block;
+    width: 1.1em;
+    height: 1.1em;
+    vertical-align: -0.18em;
+    filter: none;
+}
+.card h3 .emoji-svg svg { display: block; width: 100%; height: 100%; }
 .badges { display: flex; gap: 6px; margin-bottom: 8px; }
 .badge {
     font-size: 0.75em;
@@ -638,7 +646,7 @@ body.dark-mode .cyber-datawave-svg {
         // --- Games ---
         {
             category: 'Games',
-            emoji: '🕯️',
+            iconSvg: '<path d="M5 3c0 4 1 6 3 7"/><path d="M19 3c0 4-1 6-3 7"/><path d="M8 10h8l1 5-5 6-5-6z"/><path d="M10 14h.01"/><path d="M14 14h.01"/>',
             name: 'Väsenväktaren',
             description: 'A turn-based creature collection game built on Swedish folklore.',
             app: 'https://mattiasmilger.github.io/Vasenvaktaren/',
@@ -706,7 +714,12 @@ body.dark-mode .cyber-datawave-svg {
         card.dataset.name = p.name;
 
         const title = el('h3');
-        if (p.emoji) {
+        if (p.iconSvg) {
+            const icon = el('span', 'emoji emoji-svg');
+            icon.setAttribute('aria-hidden', 'true');
+            icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p.iconSvg + '</svg>';
+            title.appendChild(icon);
+        } else if (p.emoji) {
             const icon = el('span', 'emoji', p.emoji);
             icon.setAttribute('aria-hidden', 'true');
             title.appendChild(icon);
